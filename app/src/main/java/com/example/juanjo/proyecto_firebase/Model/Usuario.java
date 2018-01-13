@@ -10,14 +10,19 @@ public class Usuario {
     private String apellidos;
     private String correo;
     private String direccion;
-    private String usuario;
 
-    public Usuario(String nombre, String apellidos, String correo, String direccion, String usuario) {
+
+
+    public Usuario(String nombre, String apellidos, String correo, String direccion) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.correo = correo;
         this.direccion = direccion;
-        this.usuario = usuario;
+
+    }
+
+    public Usuario(){
+
     }
 
     public String getNombre() {
@@ -52,11 +57,5 @@ public class Usuario {
         this.direccion = direccion;
     }
 
-    public String getUsuario() {
-        return usuario;
-    }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
 }

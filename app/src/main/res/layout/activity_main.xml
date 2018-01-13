@@ -51,14 +51,6 @@
         android:hint="Direccion"
         android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/editUsuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Usuario"
-        android:inputType="textPersonName" />
-
     <Button
         android:id="@+id/buttonAñadir"
         android:layout_width="match_parent"
@@ -66,5 +58,18 @@
         android:clickable="true"
         android:onClick="onClick"
         android:text="Añadir" />
+
+    <Button
+        android:id="@+id/buttonModificar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onClick"
+        android:text="Modificar" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

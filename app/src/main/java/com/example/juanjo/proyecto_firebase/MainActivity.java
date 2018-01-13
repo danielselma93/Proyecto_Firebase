@@ -4,23 +4,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.juanjo.proyecto_firebase.Model.Usuario;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText textNombre, textApellidos, textCorreo, textDireccion, textUsuario;
+    EditText textNombre, textApellidos, textCorreo, textDireccion;
+    ListView lista;
 
-    Button botonAñadir;
+    Button botonAñadir, botonModificar;
 
     DatabaseReference bbdd;
 
+    ArrayList<String> listado = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +41,39 @@ public class MainActivity extends AppCompatActivity {
         textApellidos = (EditText) findViewById(R.id.editApellidos);
         textCorreo = (EditText) findViewById(R.id.editCorreo);
         textDireccion = (EditText) findViewById(R.id.editDireccion);
-        textUsuario = (EditText) findViewById(R.id.editUsuario);
+
+        lista = (ListView) findViewById(R.id.list);
 
         botonAñadir = (Button) findViewById(R.id.buttonAñadir);
+        botonModificar = (Button) findViewById(R.id.buttonModificar);
 
         bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+
+        bbdd.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                ArrayAdapter<String> adaptador;
+
+                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()){
+
+                    Usuario usuario = datasnapshot.getValue(Usuario.class);
+
+                    String nombreUsu = (usuario.getNombre() + usuario.getApellidos());
+
+                    listado.add(nombreUsu);
+                }
+
+                adaptador = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_activated_1, listado);
+                lista.setAdapter(adaptador);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
         botonAñadir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 String Apellidos = textApellidos.getText().toString();
                 String Correo = textCorreo.getText().toString();
                 String Direccion = textDireccion.getText().toString();
-                String Usuario = textUsuario.getText().toString();
 
                 if(!TextUtils.isEmpty(Nombre)){
 
@@ -57,13 +94,27 @@ public class MainActivity extends AppCompatActivity {
 
                             if(!TextUtils.isEmpty(Direccion)) {
 
-                                Usuario usu = new Usuario(Nombre, Apellidos, Correo, Direccion, Usuario);
 
-                                String clave = usu.getUsuario();
 
-                                bbdd.child(clave).setValue(usu);
 
-                                Toast.makeText(MainActivity.this, "Disco añadido", Toast.LENGTH_LONG).show();
+
+                                    Usuario usu = new Usuario(Nombre, Apellidos, Correo, Direccion);
+
+
+
+                                for(int x=0;x<listado.size();x++) {
+                                    if (listado.get(x)!=(usu.getNombre() + usu.getApellidos())){
+
+                                        String clave = (usu.getNombre() + usu.getApellidos());
+
+                                        bbdd.child(clave).setValue(usu);
+
+                                        Toast.makeText(MainActivity.this, "Usuario añadido", Toast.LENGTH_LONG).show();
+                                    }else{
+                                        Toast.makeText(MainActivity.this, "Este usuario ya existe", Toast.LENGTH_LONG).show();
+
+                                    }
+                                }
 
 
                             }else{
@@ -88,5 +139,76 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        botonModificar.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+
+
+                final String Usuario = (textNombre.getText().toString() + textApellidos.getText().toString());
+
+                final String Correo = textCorreo.getText().toString();
+                final String Direccion = textDireccion.getText().toString();
+
+                String Nombre = textNombre.getText().toString();
+                String Apellidos = textApellidos.getText().toString();
+
+                Toast.makeText(MainActivity.this, Usuario, Toast.LENGTH_LONG).show();
+
+                if(!TextUtils.isEmpty(Nombre)){
+
+                    if(!TextUtils.isEmpty(Apellidos)) {
+
+                        Toast.makeText(MainActivity.this, "Estoy dentro", Toast.LENGTH_LONG).show();
+
+
+
+                        Query q = bbdd.orderByChild("Usuarios").equalTo(Usuario);
+
+                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Toast.makeText(MainActivity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
+
+
+                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+
+                                    Toast.makeText(MainActivity.this, "dentro de datasnapsot 2", Toast.LENGTH_LONG).show();
+
+                                    String clave = datasnapshot.getKey();
+
+                                    if (!TextUtils.isEmpty(Correo)) {
+
+                                        bbdd.child(clave).child("correo").setValue(textCorreo.getText().toString());
+
+
+                                    }
+                                    if (!Direccion.isEmpty()) {
+                                        bbdd.child(Usuario).child("direccion").setValue(Direccion);
+
+                                        Toast.makeText(MainActivity.this, "La direccion del  " + Usuario + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    }else {
+                        Toast.makeText(MainActivity.this, "Debes de introducir un apellido", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Debes de introducir un Nombre", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
     }
 }
