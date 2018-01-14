@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.juanjo.proyecto_firebase.MainActivity"
-    android:weightSum="1">
+    tools:context="com.example.juanjo.proyecto_firebase.Main2Activity"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Añadir un Usuario"
+        android:text="Añadir un Producto"
         android:textColor="@android:color/background_dark"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editNombre"
+        android:id="@+id/editNombreP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -28,31 +27,36 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/editApellidos"
+        android:id="@+id/editDescripcion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Apellidos"
+        android:hint="Descripcion"
+        android:inputType="textPersonName" />
+
+    <Spinner
+        android:id="@+id/spinnerCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/editPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Precio"
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/editCorreo"
+        android:id="@+id/editUsuario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Correo"
-        android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/editDireccion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Direccion"
+        android:hint="Usuario"
         android:inputType="textPersonName" />
 
     <Button
-        android:id="@+id/buttonAñadir"
+        android:id="@+id/buttonAñadirP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -60,7 +64,7 @@
         android:text="Añadir" />
 
     <Button
-        android:id="@+id/buttonModificar"
+        android:id="@+id/buttonModificarP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -68,7 +72,7 @@
         android:text="Modificar" />
 
     <Button
-        android:id="@+id/buttonEliminar"
+        android:id="@+id/buttonEliminarP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -76,7 +80,7 @@
         android:text="Eliminar" />
 
     <Button
-        android:id="@+id/buttonProducto"
+        android:id="@+id/buttonUsuarios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -84,8 +88,14 @@
         android:text="Productos" />
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/listaP"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ListView
+        android:id="@+id/listP"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
 
 </LinearLayout>

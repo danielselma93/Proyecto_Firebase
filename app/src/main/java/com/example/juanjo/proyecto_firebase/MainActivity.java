@@ -1,5 +1,6 @@
 package com.example.juanjo.proyecto_firebase;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     EditText textNombre, textApellidos, textCorreo, textDireccion;
     ListView lista;
 
-    Button botonAñadir, botonModificar;
+    Button botonAñadir, botonModificar, botonEliminar, botonProducto;
 
     DatabaseReference bbdd;
 
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
         botonAñadir = (Button) findViewById(R.id.buttonAñadir);
         botonModificar = (Button) findViewById(R.id.buttonModificar);
+        botonEliminar = (Button) findViewById(R.id.buttonEliminar);
+        botonProducto = (Button) findViewById(R.id.buttonProducto);
 
         bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
 
@@ -158,35 +161,37 @@ public class MainActivity extends AppCompatActivity {
 
                     if(!TextUtils.isEmpty(Apellidos)) {
 
-                        Toast.makeText(MainActivity.this, "Estoy dentro", Toast.LENGTH_LONG).show();
 
 
 
-                        Query q = bbdd.orderByChild("Usuarios").equalTo(Usuario);
+                        Query q = bbdd.orderByChild("Usuarios").equalTo(Nombre+Apellidos);
 
                         q.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                Toast.makeText(MainActivity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
 
 
                                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
 
-                                    Toast.makeText(MainActivity.this, "dentro de datasnapsot 2", Toast.LENGTH_LONG).show();
 
                                     String clave = datasnapshot.getKey();
 
                                     if (!TextUtils.isEmpty(Correo)) {
+                                        if (!TextUtils.isEmpty(Direccion)) {
 
-                                        bbdd.child(clave).child("correo").setValue(textCorreo.getText().toString());
 
+                                        if(clave==Usuario) {
+                                            bbdd.child(clave).child("correo").setValue(textCorreo.getText().toString());
 
+                                            bbdd.child(Usuario).child("direccion").setValue(Direccion);
+
+                                            Toast.makeText(MainActivity.this, "La direccion del  " + Usuario + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+
+                                        }
                                     }
-                                    if (!Direccion.isEmpty()) {
-                                        bbdd.child(Usuario).child("direccion").setValue(Direccion);
 
-                                        Toast.makeText(MainActivity.this, "La direccion del  " + Usuario + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+
 
                                     }
                                 }
@@ -209,6 +214,86 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        botonEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                final String Usuario = (textNombre.getText().toString() + textApellidos.getText().toString());
+
+
+
+                String Nombre = textNombre.getText().toString();
+                String Apellidos = textApellidos.getText().toString();
+
+                Toast.makeText(MainActivity.this, Usuario, Toast.LENGTH_LONG).show();
+
+                if(!TextUtils.isEmpty(Nombre)){
+
+                    if(!TextUtils.isEmpty(Apellidos)) {
+
+                        Toast.makeText(MainActivity.this, "Estoy dentro", Toast.LENGTH_LONG).show();
+
+
+
+                        Query q = bbdd.orderByChild("Usuarios").equalTo(Nombre+Apellidos);
+
+                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Toast.makeText(MainActivity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
+
+
+                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+
+                                    String clave = datasnapshot.getKey();
+
+
+                                        if(clave==Usuario) {
+
+                                            DatabaseReference ref = bbdd.child(clave);
+
+                                            Toast.makeText(MainActivity.this, "dentro de remove ", Toast.LENGTH_LONG).show();
+
+                                            ref.removeValue();
+                                        }
+
+
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Toast.makeText(MainActivity.this, "Se ha borrado el usuario introducido", Toast.LENGTH_LONG).show();
+
+                    }else {
+                        Toast.makeText(MainActivity.this, "Debes de introducir un apellido", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Debes de introducir un Nombre", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        botonProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent activity2 = new Intent(getApplicationContext(), Main2Activity.class);
+                startActivity(activity2);
+
+
+
+            }
+        });
     }
 }
