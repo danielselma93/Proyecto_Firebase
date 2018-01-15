@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.juanjo.proyecto_firebase.Model.Usuario;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     EditText textNombre, textApellidos, textCorreo, textDireccion;
     ListView lista;
+
+    FirebaseUser mAuth;
 
     Button botonAñadir, botonModificar, botonEliminar, botonProducto;
 
@@ -51,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
         botonProducto = (Button) findViewById(R.id.buttonProducto);
 
         bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+
+        mAuth = FirebaseAuth.getInstance().getCurrentUser();
+        if (mAuth != null) {
+            textNombre.setText("Bienvenido"+ " " + mAuth.getDisplayName());
+        } else {
+            //si no esta Logueado, llevale a que inicie sesión
+            startActivity(new Intent(this, Login.class));
+            finish();
+        }
 
         bbdd.addValueEventListener(new ValueEventListener() {
             @Override
