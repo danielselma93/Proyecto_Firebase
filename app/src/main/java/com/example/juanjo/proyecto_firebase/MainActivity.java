@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseReference bbdd;
 
-    ArrayList<String> listado = new ArrayList<String>();
+    static ArrayList<String> listado = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,5 +1,6 @@
 package com.example.juanjo.proyecto_firebase;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -52,7 +54,6 @@ public class Main2Activity extends AppCompatActivity {
         textPrecio = (EditText) findViewById(R.id.editPrecio);
         textUsuario = (EditText) findViewById(R.id.editUsuario);
 
-        listadoU = (ListView) findViewById(R.id.listP);
 
         listadoP = (ListView) findViewById(R.id.listaP);
 
@@ -75,14 +76,15 @@ public class Main2Activity extends AppCompatActivity {
 
 
 
-                    Producto producto = datasnapshot.getValue(Producto.class);
+                        Producto producto = datasnapshot.getValue(Producto.class);
 
-                    String nombreProd = (producto.getNombre());
+                    String nombreProd = producto.getNombre();
 
                     listado2.add(nombreProd);
                 }
 
 
+                Toast.makeText(Main2Activity.this, "He obtenido produc", Toast.LENGTH_SHORT).show();
 
                 adaptador2 = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_list_item_activated_1, listado2);
                 listadoP.setAdapter(adaptador2);
@@ -98,7 +100,6 @@ public class Main2Activity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                ArrayAdapter<String> adaptador1;
 
                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
 
@@ -108,8 +109,7 @@ public class Main2Activity extends AppCompatActivity {
 
                     listado1.add(nombreUsu);
                 }
-                adaptador1 = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_list_item_activated_1, listado1);
-                listadoU.setAdapter(adaptador1);
+
             }
 
             @Override
@@ -163,12 +163,16 @@ public class Main2Activity extends AppCompatActivity {
                             if (!TextUtils.isEmpty(Usuario)) {
 
 
+                                Toast.makeText(Main2Activity.this, "Estoy en empty usuario", Toast.LENGTH_SHORT).show();
                                 Producto produ = new Producto(Nombre, Descripcion, categoria, Usuario);
 
 
                                 for (int x = 0; x < listado1.size(); x++) {
+                                    Toast.makeText(Main2Activity.this, "Estoy en el bucle 1", Toast.LENGTH_SHORT).show();
+
                                     if (listado1.get(x) == Usuario) {
 
+                                        Toast.makeText(Main2Activity.this, "Estoy en el bucle 2", Toast.LENGTH_SHORT).show();
                                         String clave = produ.getNombre();
 
                                         bbddP.child(clave).setValue(produ);
@@ -202,6 +206,162 @@ public class Main2Activity extends AppCompatActivity {
                 }
 
 
+            }
+        });
+
+        botonModificar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+
+                final String Producto = textNombre.getText().toString();
+
+                final String Descripcion = textDescripcion.getText().toString();
+                final String Precio = textPrecio.getText().toString();
+                final String Usuario = textUsuario.getText().toString();
+
+                Toast.makeText(Main2Activity.this, Producto, Toast.LENGTH_LONG).show();
+
+                if(!TextUtils.isEmpty(Producto)){
+
+
+                        Query q = bbddP.orderByChild("productos").equalTo(Producto);
+
+                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+
+                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+
+
+                                    String clave = datasnapshot.getKey();
+
+                                    if (clave == Producto) {
+
+
+                                        if (!TextUtils.isEmpty(Descripcion)) {
+
+                                            bbddP.child(clave).child("Descripcion").setValue(Descripcion);
+
+                                            Toast.makeText(Main2Activity.this, "La Descripcion del  " + Producto + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+
+                                        }
+                                        if (!TextUtils.isEmpty(Precio)) {
+
+                                            bbddP.child(clave).child("Precio").setValue(Precio);
+
+                                            Toast.makeText(Main2Activity.this, "El precio del  " + Producto + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+
+                                        }
+
+                                        if (!TextUtils.isEmpty(Usuario)) {
+
+                                            for (int x = 0; x < listado1.size(); x++) {
+
+                                                if (listado1.get(x) == Usuario) {
+
+                                                    bbddP.child(clave).child("Usuario").setValue(Usuario);
+
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                }
+                else{
+                    Toast.makeText(Main2Activity.this, "Debes de introducir un Nombre", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        botonEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+
+
+                final String Producto = textNombre.getText().toString();
+
+                Toast.makeText(Main2Activity.this, Producto, Toast.LENGTH_LONG).show();
+
+                if(!TextUtils.isEmpty(Producto)){
+
+
+                        Toast.makeText(Main2Activity.this, "Estoy dentro", Toast.LENGTH_LONG).show();
+
+
+
+                        Query q = bbddP.orderByChild("productos").equalTo(Producto);
+
+                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Toast.makeText(Main2Activity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
+
+
+                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+
+                                    String clave = datasnapshot.getKey();
+
+
+                                    if(clave==Producto) {
+
+                                        DatabaseReference ref = bbddP.child(clave);
+
+                                        Toast.makeText(Main2Activity.this, "dentro de remove ", Toast.LENGTH_LONG).show();
+
+                                        ref.removeValue();
+                                    }
+
+
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Toast.makeText(Main2Activity.this, "Se ha borrado el producto introducido", Toast.LENGTH_LONG).show();
+
+                }
+                else{
+                    Toast.makeText(Main2Activity.this, "Debes de introducir un Nombre de producto", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        botonUsuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(activity);
             }
         });
     }
