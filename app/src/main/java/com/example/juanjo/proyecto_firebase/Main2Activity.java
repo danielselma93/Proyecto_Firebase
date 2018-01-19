@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.juanjo.proyecto_firebase.Model.Producto;
 import com.example.juanjo.proyecto_firebase.Model.Usuario;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,14 +31,15 @@ public class Main2Activity extends AppCompatActivity {
 
     String categoria;
 
-    EditText textNombre, textDescripcion, textPrecio, textUsuario;
+    EditText textNombre, textDescripcion, textPrecio;
     ListView listadoU, listadoP;
 
-    Button botonAñadir, botonModificar, botonEliminar, botonUsuario;
+    Button botonAñadir, botonModificar, botonEliminar, botonUsuario, botonCerrarSesion;
 
     DatabaseReference bbddP;
     DatabaseReference bbddU;
 
+    FirebaseAuth userAuth;
 
     ArrayList<String> listado1 = new ArrayList<String>();
     ArrayList<String> listado2 = new ArrayList<String>();
@@ -52,7 +54,6 @@ public class Main2Activity extends AppCompatActivity {
         textNombre = (EditText) findViewById(R.id.editNombreP);
         textDescripcion = (EditText) findViewById(R.id.editDescripcion);
         textPrecio = (EditText) findViewById(R.id.editPrecio);
-        textUsuario = (EditText) findViewById(R.id.editUsuario);
 
 
         listadoP = (ListView) findViewById(R.id.listaP);
@@ -61,9 +62,13 @@ public class Main2Activity extends AppCompatActivity {
         botonModificar = (Button) findViewById(R.id.buttonModificarP);
         botonEliminar = (Button) findViewById(R.id.buttonEliminarP);
         botonUsuario = (Button) findViewById(R.id.buttonUsuarios);
+        botonCerrarSesion = (Button) findViewById(R.id.buttonCerrarSesionP);
 
         bbddP = FirebaseDatabase.getInstance().getReference("productos");
         bbddU = FirebaseDatabase.getInstance().getReference("Usuarios");
+
+        userAuth = FirebaseAuth.getInstance();
+
 
         bbddP.addValueEventListener(new ValueEventListener() {
             @Override
@@ -150,7 +155,6 @@ public class Main2Activity extends AppCompatActivity {
                 String Nombre = textNombre.getText().toString();
                 String Descripcion = textDescripcion.getText().toString();
                 String Precio = textPrecio.getText().toString();
-                String Usuario = textUsuario.getText().toString();
 
                 if (!TextUtils.isEmpty(Nombre)) {
 
@@ -160,17 +164,15 @@ public class Main2Activity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(Precio)) {
 
 
-                            if (!TextUtils.isEmpty(Usuario)) {
 
 
                                 Toast.makeText(Main2Activity.this, "Estoy en empty usuario", Toast.LENGTH_SHORT).show();
-                                Producto produ = new Producto(Nombre, Descripcion, categoria, Usuario);
+                                Producto produ = new Producto(Nombre, Descripcion, categoria, Precio);
 
 
                                 for (int x = 0; x < listado1.size(); x++) {
                                     Toast.makeText(Main2Activity.this, "Estoy en el bucle 1", Toast.LENGTH_SHORT).show();
 
-                                    if (listado1.get(x) == Usuario) {
 
                                         Toast.makeText(Main2Activity.this, "Estoy en el bucle 2", Toast.LENGTH_SHORT).show();
                                         String clave = produ.getNombre();
@@ -178,17 +180,10 @@ public class Main2Activity extends AppCompatActivity {
                                         bbddP.child(clave).setValue(produ);
 
                                         Toast.makeText(Main2Activity.this, "Cancion añadida", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(Main2Activity.this, "Este usuario no existe", Toast.LENGTH_LONG).show();
-
-                                    }
                                 }
 
 
-                            } else {
-                                Toast.makeText(Main2Activity.this, "Te falta introducir una Usuario", Toast.LENGTH_LONG).show();
 
-                            }
 
                         } else {
                             Toast.makeText(Main2Activity.this, "Te falta introducir un Precio", Toast.LENGTH_LONG).show();
@@ -220,7 +215,6 @@ public class Main2Activity extends AppCompatActivity {
 
                 final String Descripcion = textDescripcion.getText().toString();
                 final String Precio = textPrecio.getText().toString();
-                final String Usuario = textUsuario.getText().toString();
 
                 Toast.makeText(Main2Activity.this, Producto, Toast.LENGTH_LONG).show();
 
@@ -258,17 +252,7 @@ public class Main2Activity extends AppCompatActivity {
 
                                         }
 
-                                        if (!TextUtils.isEmpty(Usuario)) {
 
-                                            for (int x = 0; x < listado1.size(); x++) {
-
-                                                if (listado1.get(x) == Usuario) {
-
-                                                    bbddP.child(clave).child("Usuario").setValue(Usuario);
-
-                                                }
-                                            }
-                                        }
 
                                     }
 
@@ -362,6 +346,20 @@ public class Main2Activity extends AppCompatActivity {
 
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(activity);
+            }
+        });
+
+        botonCerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                userAuth.signOut();
+
+                Intent activity = new Intent(getApplicationContext(), Login.class);
+                startActivity(activity);
+
+                finish();
+
             }
         });
     }

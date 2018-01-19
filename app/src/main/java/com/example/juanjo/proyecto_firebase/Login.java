@@ -1,5 +1,6 @@
 package com.example.juanjo.proyecto_firebase;
 
+import android.content.Intent;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -47,6 +48,15 @@ public class Login extends AppCompatActivity {
 
         });
 
+        btnregistrarse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent activity2 = new Intent(getApplicationContext(), Registrarse.class);
+                startActivity(activity2);
+            }
+        });
+
 
     }
 
@@ -61,8 +71,11 @@ public class Login extends AppCompatActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(Login.this, "Ha fallaso la autentificacion",
+                            Toast.makeText(Login.this, "Ha fallado la autentificacion",
                                     Toast.LENGTH_SHORT).show();
+                        }else{
+                            Intent activity2 = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(activity2);
                         }
 
                         // ...

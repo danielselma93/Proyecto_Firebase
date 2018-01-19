@@ -9,9 +9,10 @@
     android:weightSum="1">
 
     <TextView
+        android:id="@+id/textViewTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Añadir un Usuario"
+        android:text="Usuario"
         android:textColor="@android:color/background_dark"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,6 +83,14 @@
         android:clickable="true"
         android:onClick="onClick"
         android:text="Productos" />
+
+    <Button
+        android:id="@+id/buttonCerrarSesionU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onClick"
+        android:text="Cerrar Sesion" />
 
     <ListView
         android:id="@+id/list"

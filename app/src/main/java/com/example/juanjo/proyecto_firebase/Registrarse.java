@@ -1,5 +1,6 @@
 package com.example.juanjo.proyecto_firebase;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -95,11 +96,16 @@ public class Registrarse extends AppCompatActivity {
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             Toast.makeText(Registrarse.this, "El registro ha sido exitoso",
                                     Toast.LENGTH_SHORT).show();
 
-                            RegistrarUsuario();
+                            Registrarbbdd();
+
+                            Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(activity);
+
+                            finish();
 
                         }else{
 
@@ -141,11 +147,12 @@ public class Registrarse extends AppCompatActivity {
 
                             Usuario usu = new Usuario(Nombre, Apellidos, Correo, Direccion);
 
+                            String usuario = (usu.getNombre() + usu.getApellidos());
 
                             for (int x = 0; x < listado.size(); x++) {
-                                if (listado.get(x) != usu.getCorreo()) {
+                                if (listado.get(x) != usuario) {
 
-                                    String clave = usu.getCorreo();
+                                    String clave = (usuario);
 
                                     bbdd.child(clave).setValue(usu);
 

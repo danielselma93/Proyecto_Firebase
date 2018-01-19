@@ -30,8 +30,9 @@ public class MainActivity extends AppCompatActivity {
     ListView lista;
 
     FirebaseUser mAuth;
+    FirebaseAuth userAuth;
 
-    Button botonAñadir, botonModificar, botonEliminar, botonProducto;
+    Button botonAñadir, botonModificar, botonEliminar, botonProducto, botonCerrarSesion;
 
     DatabaseReference bbdd;
 
@@ -53,12 +54,15 @@ public class MainActivity extends AppCompatActivity {
         botonModificar = (Button) findViewById(R.id.buttonModificar);
         botonEliminar = (Button) findViewById(R.id.buttonEliminar);
         botonProducto = (Button) findViewById(R.id.buttonProducto);
+        botonCerrarSesion = (Button) findViewById(R.id.buttonCerrarSesionU);
 
         bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
 
+        userAuth = FirebaseAuth.getInstance();
         mAuth = FirebaseAuth.getInstance().getCurrentUser();
+
         if (mAuth != null) {
-            textNombre.setText("Bienvenido"+ " " + mAuth.getDisplayName());
+            textNombre.setHint("Bienvenido usuario con correo " + mAuth.getEmail());
         } else {
             //si no esta Logueado, llevale a que inicie sesión
             startActivity(new Intent(this, Login.class));
@@ -179,14 +183,12 @@ public class MainActivity extends AppCompatActivity {
 
                         Query q = bbdd.orderByChild("Usuarios").equalTo(Nombre+Apellidos);
 
-                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                        q.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
-
                                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
-
+                                    Toast.makeText(MainActivity.this,"Hola",Toast.LENGTH_SHORT).show();
 
                                     String clave = datasnapshot.getKey();
 
@@ -306,6 +308,19 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            }
+        });
+
+        botonCerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                userAuth.signOut();
+
+                Intent activity = new Intent(getApplicationContext(), Login.class);
+                startActivity(activity);
+
+                finish();
             }
         });
     }
