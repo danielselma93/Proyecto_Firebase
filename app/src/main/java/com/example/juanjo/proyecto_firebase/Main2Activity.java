@@ -29,19 +29,17 @@ public class Main2Activity extends AppCompatActivity {
 
     Spinner categorias;
 
-    String categoria;
+    String categoria, ClaveModif;
 
     EditText textNombre, textDescripcion, textPrecio;
-    ListView listadoU, listadoP;
+    ListView  listadoP;
 
-    Button botonAñadir, botonModificar, botonEliminar, botonUsuario, botonCerrarSesion;
+    Button botonAñadir, botonModificar, botonEliminar, botonUsuario, botonCerrarSesion, botonTodosProductos;
 
-    DatabaseReference bbddP;
-    DatabaseReference bbddU;
+    DatabaseReference bbddP, bbddModificarP;
 
     FirebaseAuth userAuth;
 
-    ArrayList<String> listado1 = new ArrayList<String>();
     ArrayList<String> listado2 = new ArrayList<String>();
 
     @Override
@@ -63,65 +61,21 @@ public class Main2Activity extends AppCompatActivity {
         botonEliminar = (Button) findViewById(R.id.buttonEliminarP);
         botonUsuario = (Button) findViewById(R.id.buttonUsuarios);
         botonCerrarSesion = (Button) findViewById(R.id.buttonCerrarSesionP);
+        botonTodosProductos = (Button) findViewById(R.id.buttonTodosProductos);
 
-        bbddP = FirebaseDatabase.getInstance().getReference("productos");
-        bbddU = FirebaseDatabase.getInstance().getReference("Usuarios");
 
         userAuth = FirebaseAuth.getInstance();
 
+        final String clave = userAuth.getCurrentUser().getUid();
 
-        bbddP.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                ArrayAdapter<String> adaptador2;
-
-                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+        bbddP = FirebaseDatabase.getInstance().getReference("productos " + clave);
 
 
 
-                        Producto producto = datasnapshot.getValue(Producto.class);
+        recargar();
 
-                    String nombreProd = producto.getNombre();
+        Toast.makeText(Main2Activity.this, clave, Toast.LENGTH_LONG).show();
 
-                    listado2.add(nombreProd);
-                }
-
-
-                Toast.makeText(Main2Activity.this, "He obtenido produc", Toast.LENGTH_SHORT).show();
-
-                adaptador2 = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_list_item_activated_1, listado2);
-                listadoP.setAdapter(adaptador2);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        bbddU.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
-
-                    Usuario usuario = datasnapshot.getValue(Usuario.class);
-
-                    String nombreUsu = (usuario.getNombre() + usuario.getApellidos());
-
-                    listado1.add(nombreUsu);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -156,6 +110,8 @@ public class Main2Activity extends AppCompatActivity {
                 String Descripcion = textDescripcion.getText().toString();
                 String Precio = textPrecio.getText().toString();
 
+                String claveP = bbddP.push().getKey();
+
                 if (!TextUtils.isEmpty(Nombre)) {
 
 
@@ -166,21 +122,16 @@ public class Main2Activity extends AppCompatActivity {
 
 
 
-                                Toast.makeText(Main2Activity.this, "Estoy en empty usuario", Toast.LENGTH_SHORT).show();
                                 Producto produ = new Producto(Nombre, Descripcion, categoria, Precio);
 
 
-                                for (int x = 0; x < listado1.size(); x++) {
-                                    Toast.makeText(Main2Activity.this, "Estoy en el bucle 1", Toast.LENGTH_SHORT).show();
 
 
-                                        Toast.makeText(Main2Activity.this, "Estoy en el bucle 2", Toast.LENGTH_SHORT).show();
-                                        String clave = produ.getNombre();
+                                        bbddP.child(claveP).setValue(produ);
 
-                                        bbddP.child(clave).setValue(produ);
+                                        Toast.makeText(Main2Activity.this, "Producto añadido", Toast.LENGTH_LONG).show();
 
-                                        Toast.makeText(Main2Activity.this, "Cancion añadida", Toast.LENGTH_LONG).show();
-                                }
+                                        recargar();
 
 
 
@@ -216,57 +167,69 @@ public class Main2Activity extends AppCompatActivity {
                 final String Descripcion = textDescripcion.getText().toString();
                 final String Precio = textPrecio.getText().toString();
 
-                Toast.makeText(Main2Activity.this, Producto, Toast.LENGTH_LONG).show();
 
                 if(!TextUtils.isEmpty(Producto)){
 
 
-                        Query q = bbddP.orderByChild("productos").equalTo(Producto);
+                    Query q = bbddP.orderByChild("nombre").equalTo(Producto);
 
-                        q.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!TextUtils.isEmpty(Descripcion) || !TextUtils.isEmpty(Precio)) {
 
+                    q.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
 
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
-
-
-                                    String clave = datasnapshot.getKey();
-
-                                    if (clave == Producto) {
+                            Toast.makeText(Main2Activity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
 
 
-                                        if (!TextUtils.isEmpty(Descripcion)) {
+                            for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
 
-                                            bbddP.child(clave).child("Descripcion").setValue(Descripcion);
+                                ClaveModif = datasnapshot.getKey();
 
-                                            Toast.makeText(Main2Activity.this, "La Descripcion del  " + Producto + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
+                                bbddModificarP = FirebaseDatabase.getInstance().getReference("productos " + clave).child(ClaveModif);
 
-                                        }
-                                        if (!TextUtils.isEmpty(Precio)) {
 
-                                            bbddP.child(clave).child("Precio").setValue(Precio);
 
-                                            Toast.makeText(Main2Activity.this, "El precio del  " + Producto + " se ha modificado con éxito", Toast.LENGTH_LONG).show();
-
-                                        }
-
+                                    if (!TextUtils.isEmpty(Descripcion)) {
+                                        bbddModificarP.child("descripcion").setValue(textDescripcion.getText().toString());
+                                        Toast.makeText(Main2Activity.this, "Se ha modificado la descripcion del producto", Toast.LENGTH_LONG).show();
 
 
                                     }
 
+                                    if (!TextUtils.isEmpty(Precio)) {
+                                        bbddModificarP.child("precio").setValue(Precio);
+                                        Toast.makeText(Main2Activity.this, "Se ha modificado el precio del producto", Toast.LENGTH_LONG).show();
 
 
+                                    }
 
-                                }
+                                    if (!TextUtils.isEmpty(categoria)) {
+                                        bbddModificarP.child("categoria").setValue(categoria);
+                                        Toast.makeText(Main2Activity.this, "Se ha modificado la categoria del producto", Toast.LENGTH_LONG).show();
+
+                                    }
+
                             }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                        }
 
-                            }
-                        });
+
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    } else {
+                        Toast.makeText(Main2Activity.this, "Introduce lo qu quieres modificar", Toast.LENGTH_SHORT).show();
+                    }
+
+
+
+
 
                 }
                 else{
@@ -359,6 +322,50 @@ public class Main2Activity extends AppCompatActivity {
                 startActivity(activity);
 
                 finish();
+
+            }
+        });
+
+        botonTodosProductos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent activity = new Intent(getApplicationContext(), TodosProductos.class);
+                startActivity(activity);
+            }
+        });
+
+    }
+
+    private void recargar(){
+
+        bbddP.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                ArrayAdapter<String> adaptador2;
+
+                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+
+
+
+                    Producto producto = datasnapshot.getValue(Producto.class);
+
+                    String nombreProd = producto.getNombre();
+
+                    listado2.add(nombreProd);
+                }
+
+
+                Toast.makeText(Main2Activity.this, "He obtenido producto", Toast.LENGTH_SHORT).show();
+
+                adaptador2 = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_list_item_activated_1, listado2);
+                listadoP.setAdapter(adaptador2);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

@@ -72,6 +72,14 @@
         android:text="Eliminar" />
 
     <Button
+        android:id="@+id/buttonTodosProductos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onClick"
+        android:text="Todos los Productos" />
+
+    <Button
         android:id="@+id/buttonUsuarios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

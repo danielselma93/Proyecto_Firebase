@@ -53,28 +53,12 @@
         android:inputType="textPersonName" />
 
     <Button
-        android:id="@+id/buttonAñadir"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:onClick="onClick"
-        android:text="Añadir" />
-
-    <Button
         android:id="@+id/buttonModificar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:onClick="onClick"
         android:text="Modificar" />
-
-    <Button
-        android:id="@+id/buttonEliminar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:onClick="onClick"
-        android:text="Eliminar" />
 
     <Button
         android:id="@+id/buttonProducto"
