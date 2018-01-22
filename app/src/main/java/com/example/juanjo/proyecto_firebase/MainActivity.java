@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText textNombre, textApellidos, textCorreo, textDireccion;
+    EditText textNombre, textApellidos, textDireccion;
     ListView lista;
 
     TextView titulo;
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         textNombre = (EditText) findViewById(R.id.editNombre);
         textApellidos = (EditText) findViewById(R.id.editApellidos);
-        textCorreo = (EditText) findViewById(R.id.editCorreo);
         textDireccion = (EditText) findViewById(R.id.editDireccion);
 
         titulo = (TextView) findViewById(R.id.textViewTitulo);
@@ -105,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
                 final String Usuario = (textNombre.getText().toString() + textApellidos.getText().toString());
 
-                final String Correo = textCorreo.getText().toString();
                 final String Direccion = textDireccion.getText().toString();
 
                 String Nombre = textNombre.getText().toString();
@@ -117,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
 
                     if(!TextUtils.isEmpty(Apellidos)) {
 
-                        if (!TextUtils.isEmpty(Correo)) {
                             if (!TextUtils.isEmpty(Direccion)) {
 
 
@@ -132,14 +129,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                             }else{
-                                Toast.makeText(MainActivity.this,"Introduce un correo",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this,"Introduce una direccion",Toast.LENGTH_SHORT).show();
 
                             }
 
-                        }else{
-                            Toast.makeText(MainActivity.this,"Introduce un correo",Toast.LENGTH_SHORT).show();
 
-                        }
 
 
 

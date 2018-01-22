@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.juanjo.proyecto_firebase.Model.Producto;
@@ -29,14 +30,18 @@ public class Main2Activity extends AppCompatActivity {
 
     Spinner categorias;
 
-    String categoria, ClaveModif;
+    String categoria, ClaveModif, claveEliminar;
+
+    Integer contador = 0;
 
     EditText textNombre, textDescripcion, textPrecio;
     ListView  listadoP;
 
-    Button botonAñadir, botonModificar, botonEliminar, botonUsuario, botonCerrarSesion, botonTodosProductos;
+    Button botonAñadir, botonModificar, botonEliminar, botonUsuario, botonCerrarSesion, botonTodosProductos, botonRecargar;
 
     DatabaseReference bbddP, bbddModificarP;
+
+    TextView tituloProd;
 
     FirebaseAuth userAuth;
 
@@ -61,20 +66,19 @@ public class Main2Activity extends AppCompatActivity {
         botonEliminar = (Button) findViewById(R.id.buttonEliminarP);
         botonUsuario = (Button) findViewById(R.id.buttonUsuarios);
         botonCerrarSesion = (Button) findViewById(R.id.buttonCerrarSesionP);
-        botonTodosProductos = (Button) findViewById(R.id.buttonTodosProductos);
+        botonTodosProductos = (Button) findViewById(R.id.buttonTodosProd);
 
+        tituloProd = (TextView) findViewById(R.id.textViewProductos);
 
         userAuth = FirebaseAuth.getInstance();
 
         final String clave = userAuth.getCurrentUser().getUid();
 
-        bbddP = FirebaseDatabase.getInstance().getReference("productos " + clave);
+        bbddP = FirebaseDatabase.getInstance().getReference("Productos");
 
 
 
         recargar();
-
-        Toast.makeText(Main2Activity.this, clave, Toast.LENGTH_LONG).show();
 
 
 
@@ -122,17 +126,14 @@ public class Main2Activity extends AppCompatActivity {
 
 
 
-                                Producto produ = new Producto(Nombre, Descripcion, categoria, Precio);
+                                Producto produ = new Producto(Nombre, Descripcion, categoria, clave,  Precio);
 
 
+                                bbddP.child(claveP).setValue(produ);
 
+                                Toast.makeText(Main2Activity.this, "Producto añadido", Toast.LENGTH_LONG).show();
 
-                                        bbddP.child(claveP).setValue(produ);
-
-                                        Toast.makeText(Main2Activity.this, "Producto añadido", Toast.LENGTH_LONG).show();
-
-                                        recargar();
-
+                                recargar();
 
 
 
@@ -180,14 +181,12 @@ public class Main2Activity extends AppCompatActivity {
 
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            Toast.makeText(Main2Activity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
-
 
                             for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
 
                                 ClaveModif = datasnapshot.getKey();
 
-                                bbddModificarP = FirebaseDatabase.getInstance().getReference("productos " + clave).child(ClaveModif);
+                                bbddModificarP = FirebaseDatabase.getInstance().getReference("Productos").child(ClaveModif);
 
 
 
@@ -249,43 +248,43 @@ public class Main2Activity extends AppCompatActivity {
 
                 final String Producto = textNombre.getText().toString();
 
-                Toast.makeText(Main2Activity.this, Producto, Toast.LENGTH_LONG).show();
+
+
 
                 if(!TextUtils.isEmpty(Producto)){
 
 
-                        Toast.makeText(Main2Activity.this, "Estoy dentro", Toast.LENGTH_LONG).show();
+                    Query q = bbddP.orderByChild("nombre").equalTo(Producto);
 
-
-
-                        Query q = bbddP.orderByChild("productos").equalTo(Producto);
 
                         q.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
+
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                Toast.makeText(Main2Activity.this, "dentro de datasnapsot 1", Toast.LENGTH_LONG).show();
 
 
                                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
 
-                                    String clave = datasnapshot.getKey();
+                                    claveEliminar = datasnapshot.getKey();
 
 
-                                    if(clave==Producto) {
+                                    DatabaseReference ref = bbddP.child(claveEliminar);
 
-                                        DatabaseReference ref = bbddP.child(clave);
+                                    ref.removeValue();
 
-                                        Toast.makeText(Main2Activity.this, "dentro de remove ", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Main2Activity.this, "Se ha eliminado el producto: "+ Producto , Toast.LENGTH_SHORT).show();
 
-                                        ref.removeValue();
-                                    }
+                                    recargar();
 
 
 
 
                                 }
+
                             }
+
+
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
@@ -293,13 +292,12 @@ public class Main2Activity extends AppCompatActivity {
                             }
                         });
 
-                        Toast.makeText(Main2Activity.this, "Se ha borrado el producto introducido", Toast.LENGTH_LONG).show();
+
 
                 }
                 else{
-                    Toast.makeText(Main2Activity.this, "Debes de introducir un Nombre de producto", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Main2Activity.this, "Debes de introducir un Nombre", Toast.LENGTH_LONG).show();
                 }
-
             }
         });
 
@@ -326,6 +324,8 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
 
+
+
         botonTodosProductos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -335,10 +335,10 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
 
+
     }
 
-    private void recargar(){
-
+    public void recargar(){
         bbddP.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -346,19 +346,30 @@ public class Main2Activity extends AppCompatActivity {
 
                 ArrayAdapter<String> adaptador2;
 
+
+                listado2.clear();
+
+                contador=0;
+
                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
-
-
 
                     Producto producto = datasnapshot.getValue(Producto.class);
 
                     String nombreProd = producto.getNombre();
 
-                    listado2.add(nombreProd);
+
+                        listado2.add(nombreProd);
+
+                            contador++;
+
                 }
 
+                if(listado2.isEmpty()){
+                    tituloProd.setText("No tiene productos");
+                }else{
+                    tituloProd.setText("Tiene " + contador+" productos");
+                }
 
-                Toast.makeText(Main2Activity.this, "He obtenido producto", Toast.LENGTH_SHORT).show();
 
                 adaptador2 = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_list_item_activated_1, listado2);
                 listadoP.setAdapter(adaptador2);
@@ -370,4 +381,5 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
     }
+
 }

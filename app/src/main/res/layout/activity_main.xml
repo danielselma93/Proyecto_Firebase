@@ -37,14 +37,6 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/editCorreo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Correo"
-        android:inputType="textPersonName" />
-
-    <EditText
         android:id="@+id/editDireccion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,6 +67,13 @@
         android:clickable="true"
         android:onClick="onClick"
         android:text="Cerrar Sesion" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lista de Usuarios"
+        android:textSize="24sp" />
 
     <ListView
         android:id="@+id/list"

@@ -25,6 +25,10 @@ public class TodosProductos extends AppCompatActivity {
     static ArrayList<String> listadoCoches = new ArrayList<String>();
     static ArrayList<String> listadoHogar = new ArrayList<String>();
 
+    ArrayAdapter<String> adaptadorProductosHogar;
+    ArrayAdapter<String> adaptadorProductosCoche;
+    ArrayAdapter<String> adaptadorProductosTec;
+
     DatabaseReference bbddP;
 
     FirebaseAuth userAuth;
@@ -40,46 +44,107 @@ public class TodosProductos extends AppCompatActivity {
 
         userAuth = FirebaseAuth.getInstance();
 
-        final String clave = userAuth.getCurrentUser().getUid();
+
+        bbddP = FirebaseDatabase.getInstance().getReference("Productos");
 
 
-        bbddP = FirebaseDatabase.getInstance().getReference("quicktrade-3a1b6");
-
-
-        cargarProductos();
+        cargarProductosTecnologia();
+        cargarProductosCoches();
+        cargarProductosHogar();
 
     }
-    public void cargarProductos(){
-    Query q =  bbddP.orderByChild("categoria").equalTo("Tecnologia");
+
+    public void cargarProductosTecnologia() {
+        Query q = bbddP.orderByChild("categoria").equalTo("Tecnologia");
 
         q.addValueEventListener(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            ArrayAdapter<String> adaptador2;
-
-            for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Carga Valores encontrados
 
 
+                //Obtenemos nombres de productos
+                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                    Producto prod = datasnapshot.getValue(Producto.class);
+                    String nombreProductoTec = prod.getNombre();
 
-                Producto producto = datasnapshot.getValue(Producto.class);
+                    listadoTecno.add(nombreProductoTec);
+                    adaptadorProductosTec = new ArrayAdapter<String>(TodosProductos.this, android.R.layout.simple_list_item_1, listadoTecno);
+                    listaTecno.setAdapter(adaptadorProductosTec);
+                }
 
-                String nombreProd = producto.getNombre();
 
-                listadoTecno.add(nombreProd);
             }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-            Toast.makeText(TodosProductos.this, "He obtenido producto", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void cargarProductosCoches(){
+        Query q =  bbddP.orderByChild("categoria").equalTo("Coches");
 
-            adaptador2 = new ArrayAdapter<String>(TodosProductos.this, android.R.layout.simple_list_item_activated_1, listadoTecno);
-            listaTecno.setAdapter(adaptador2);
-        }
+        q.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Carga Valores encontrados
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
 
-        }
-    });
+
+                //Obtenemos nombres de productos
+                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                    Producto prod = datasnapshot.getValue(Producto.class);
+                    String nombreProductoCoche = prod.getNombre();
+
+                    listadoCoches.add(nombreProductoCoche);
+                    adaptadorProductosCoche = new ArrayAdapter<String>(TodosProductos.this, android.R.layout.simple_list_item_1, listadoCoches);
+                    listaCoches.setAdapter(adaptadorProductosCoche);
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void cargarProductosHogar(){
+        Query q =  bbddP.orderByChild("categoria").equalTo("Hogar");
+
+        q.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Carga Valores encontrados
+
+
+
+                //Obtenemos nombres de productos
+                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                    Producto prod = datasnapshot.getValue(Producto.class);
+                    String nombreProductoHogar = prod.getNombre();
+
+                    listadoHogar.add(nombreProductoHogar);
+                    adaptadorProductosHogar = new ArrayAdapter<String>(TodosProductos.this, android.R.layout.simple_list_item_1, listadoHogar);
+                    listaHogar.setAdapter(adaptadorProductosHogar);
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
 }
-}
+

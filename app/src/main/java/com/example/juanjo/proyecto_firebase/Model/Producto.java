@@ -11,12 +11,15 @@ public class Producto {
     private String nombre;
     private String descripcion;
     private String categoria;
+    private String codigo_usuario;
     private String precio;
 
-    public Producto(String nombre, String descripcion, String categoria, String precio) {
+    public Producto(String nombre, String descripcion, String categoria, String codigo_usuario, String precio) {
+
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.categoria = categoria;
+        this.codigo_usuario = codigo_usuario;
         this.precio = precio;
     }
 
@@ -41,12 +44,20 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public String  getCategoria() {
+    public String getCategoria() {
         return categoria;
     }
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getCodigo_usuario() {
+        return codigo_usuario;
+    }
+
+    public void setCodigo_usuario(String codigo_usuario) {
+        this.codigo_usuario = codigo_usuario;
     }
 
     public String getPrecio() {

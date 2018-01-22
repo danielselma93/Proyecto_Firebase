@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/TituloAñadir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Añadir un Producto"
@@ -45,7 +46,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Precio"
-        android:inputType="textPersonName" />
+        android:inputType="number" />
 
     <Button
         android:id="@+id/buttonAñadirP"
@@ -72,12 +73,10 @@
         android:text="Eliminar" />
 
     <Button
-        android:id="@+id/buttonTodosProductos"
+        android:id="@+id/buttonTodosProd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:onClick="onClick"
-        android:text="Todos los Productos" />
+        android:text="Todos los productos" />
 
     <Button
         android:id="@+id/buttonUsuarios"
@@ -94,6 +93,13 @@
         android:clickable="true"
         android:onClick="onClick"
         android:text="Cerrar Sesion" />
+
+    <TextView
+        android:id="@+id/textViewProductos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sus productos"
+        android:textSize="18sp" />
 
     <ListView
         android:id="@+id/listaP"
