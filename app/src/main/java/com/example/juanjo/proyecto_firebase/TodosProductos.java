@@ -62,6 +62,7 @@ public class TodosProductos extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Carga Valores encontrados
 
+                listadoTecno.clear();
 
                 //Obtenemos nombres de productos
                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
@@ -91,6 +92,8 @@ public class TodosProductos extends AppCompatActivity {
                 //Carga Valores encontrados
 
 
+
+                listadoCoches.clear();
 
                 //Obtenemos nombres de productos
                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
@@ -123,6 +126,7 @@ public class TodosProductos extends AppCompatActivity {
                 //Carga Valores encontrados
 
 
+                listadoHogar.clear();
 
                 //Obtenemos nombres de productos
                 for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
